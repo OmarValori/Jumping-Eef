@@ -99,29 +99,30 @@
             document.getElementById("output").innerText = "Gestopt";
         }
 
-        function executeSequence() {
-            document.getElementById("output").innerText = "Aftellen...";
-            
-            // Speel de drie piepjes correct af
-            setTimeout(() => playBeep(), 0);
-            setTimeout(() => playBeep(), 1000);
-            setTimeout(() => playBeep(), 2000);
+       function executeSequence() {
+    document.getElementById("output").innerText = "Aftellen...";
 
-            // Wacht random 0.5 - 1.5 sec na laatste piep en zeg "Links", "Rechts" of "Ik hou van je"
-            let pauseTime = Math.random() * 1000 + 500;
-            setTimeout(() => {
-                count++;
-                if (count % 10 === 0) {
-                    playWord("Ik hou van je");
-                } else {
-                    let randomWord = woorden[Math.floor(Math.random() * 2)]; // Zorgt voor een eerlijke 50/50 verdeling
-                    playWord(randomWord);
-                }
+    // Speel de drie piepjes correct af
+    setTimeout(() => playBeep(), 0);
+    setTimeout(() => playBeep(), 1000);
+    setTimeout(() => playBeep(), 2000);
 
-                // Start de volgende cyclus met een pauze van 2-5 seconden
-                interval = setTimeout(executeSequence, Math.random() * 500 + 500);
-            }, 2500 + pauseTime); // Wachten tot piepjes klaar zijn + extra random pauze
+    // Wacht random 0.5 - 1 seconden na laatste piep en zeg "Links", "Rechts" of "Ik hou van je"
+    let pauseTime = Math.random() * 500 + 500;
+    setTimeout(() => {
+        count++;
+        if (count % 10 === 0) {
+            playWord("Ik hou van je");
+        } else {
+            let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
+            playWord(randomWord);
         }
+
+        // Start de volgende cyclus met een korte pauze (geen 5 sec bug)
+        interval = setTimeout(executeSequence, Math.random() * 500 + 500);
+    }, 2500 + pauseTime); // Wachten tot piepjes klaar zijn + extra random pauze
+}
+
     </script>
 </body>
 </html>
