@@ -37,7 +37,7 @@
         function startTraining() {
             if (!interval) {
                 executeSequence();
-                interval = setInterval(executeSequence, Math.random() * 3000 + 2000); // 2-5 seconden wachttijd
+                interval = setInterval(executeSequence, Math.random() * 3000 + 2000); // Willekeurige wachttijd tussen 2-5 sec
             }
         }
 
@@ -53,10 +53,11 @@
             setTimeout(playBeep, 1000);
             setTimeout(() => {
                 playBeep();
+                let pauseTime = Math.random() * 1000 + 500; // Willekeurige pauze tussen 0.5 en 1.5 seconden
                 setTimeout(() => {
                     let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
                     playWord(randomWord);
-                }, 500); // 0.5s na laatste piep
+                }, pauseTime); 
             }, 2000);
         }
     </script>
