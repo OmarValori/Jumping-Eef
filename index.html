@@ -1,109 +1,116 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprong Trainer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #121212;
-            color: white;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        .btn {
-            background-color: #ff4757;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
-            cursor: pointer;
-            border-radius: 8px;
-            margin: 10px;
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #e84118;
-        }
-        #output {
-            font-size: 40px;
-            font-weight: bold;
-            margin-top: 30px;
-            transition: transform 0.3s ease;
-        }
-        .highlight {
-            transform: scale(1.3);
-            color: #00a8ff;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprong Trainer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #556B2F;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background-color: #ff4757;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 8px;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #e84118;
+    }
+    #output {
+      font-size: 40px;
+      font-weight: bold;
+      margin-top: 30px;
+      transition: transform 0.3s ease;
+    }
+    .highlight {
+      transform: scale(1.3);
+      color: #00a8ff;
+    }
+  </style>
 </head>
 <body>
-    <h1>Sprong Trainer</h1>
-    <button class="btn" onclick="startTraining()">Start</button>
-    <button class="btn" onclick="stopTraining()">Stop</button>
-    <p id="output">Wacht op start...</p>
+  <h1>Sprong Trainer</h1>
+  <button class="btn" onclick="startTraining()">Start</button>
+  <button class="btn" onclick="stopTraining()">Stop</button>
+  <p id="output">Wacht op start...</p>
 
-    <script>
-        let interval;
-        const woorden = ["Links", "Rechts"];
+  <script>
+    let interval;                 // Bewaar de timeout-ID voor de volgende cycle
+    let running = false;          // Flag die aangeeft of de training actief is
+    const woorden = ["Links", "Rechts"];
 
-        function playBeep() {
-            let context = new (window.AudioContext || window.webkitAudioContext)();
-            let oscillator = context.createOscillator();
-            oscillator.type = "sine";
-            oscillator.frequency.setValueAtTime(1000, context.currentTime);
-            oscillator.connect(context.destination);
-            oscillator.start();
-            setTimeout(() => oscillator.stop(), 200);
-        }
+    function playBeep() {
+      let context = new (window.AudioContext || window.webkitAudioContext)();
+      let oscillator = context.createOscillator();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(1000, context.currentTime);
+      oscillator.connect(context.destination);
+      oscillator.start();
+      setTimeout(() => oscillator.stop(), 200);
+    }
 
-        function playWord(word) {
-            let utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = "nl-NL";
-            speechSynthesis.speak(utterance);
+    function playWord(word) {
+      let utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = "nl-NL";
+      speechSynthesis.speak(utterance);
 
-            let output = document.getElementById("output");
-            output.innerText = word;
-            output.classList.add("highlight");
+      let output = document.getElementById("output");
+      output.innerText = word;
+      output.classList.add("highlight");
+      setTimeout(() => output.classList.remove("highlight"), 500);
+    }
 
-            setTimeout(() => output.classList.remove("highlight"), 500);
-        }
+    function startTraining() {
+      if (!running) {
+        running = true;
+        executeSequence();
+      }
+    }
 
-        function startTraining() {
-            if (!interval) {
-                executeSequence();
-            }
-        }
+    function stopTraining() {
+      running = false;         // Zet de flag uit zodat executeSequence niet verdergaat
+      clearTimeout(interval);    // Annuleer de volgende geplande cycle
+      interval = null;
+      document.getElementById("output").innerText = "Gestopt";
+    }
 
-        function stopTraining() {
-            clearTimeout(interval);
-            interval = null;
-            document.getElementById("output").innerText = "Gestopt";
-        }
+    function executeSequence() {
+      if (!running) return; // Als training gestopt is, doe niets
 
-        function executeSequence() {
-            if (!interval) return; // Stop als de training is gestopt
+      document.getElementById("output").innerText = "Aftellen...";
 
-            document.getElementById("output").innerText = "Aftellen...";
+      // Speel de drie piepjes af
+      setTimeout(() => { if (running) playBeep(); }, 0);
+      setTimeout(() => { if (running) playBeep(); }, 1000);
+      setTimeout(() => { if (running) playBeep(); }, 2000);
 
-            setTimeout(() => playBeep(), 0);
-            setTimeout(() => playBeep(), 1000);
-            setTimeout(() => playBeep(), 2000);
-
-            let pauseTime = Math.random() * 500 + 500; // 0.5 - 1 sec random pauze
-            setTimeout(() => {
-                let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
-                playWord(randomWord);
-
-                interval = setTimeout(executeSequence, Math.random() * 500 + 500);
-            }, 2500 + pauseTime);
-        }
-    </script>
+      // Stel een random pauze in tussen 0,5 en 1 seconden na de piepjes
+      let pauseTime = Math.random() * 500 + 500;
+      setTimeout(() => {
+        if (!running) return;
+        let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
+        playWord(randomWord);
+        // Plan de volgende cycle in met een wachttijd tussen 0,5 en 1 seconden
+        interval = setTimeout(() => {
+          if (running) executeSequence();
+        }, Math.random() * 500 + 500);
+      }, 2500 + pauseTime);
+    }
+  </script>
 </body>
 </html>
