@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprong Trainer met Aftellen</title>
+    <title>Sprong Trainer</title>
 </head>
 <body>
     <h1>Sprong Trainer</h1>
@@ -14,19 +14,19 @@
     <script>
         let interval;
         const woorden = ["Links", "Rechts"];
-        let audioBeep = new Audio("https://www.soundjay.com/button/beep-07.wav"); // Piep geluid
-
+        
+        // Geluidsbestanden voor de piepjes (gebruik standaard pieptoon)
         function playBeep() {
-            audioBeep.play();
+            let beep = new Audio("https://www.soundjay.com/button/beep-07.wav");
+            beep.play();
         }
 
-        function playWord() {
-            let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
-            document.getElementById("output").innerText = randomWord;
-
-            let utterance = new SpeechSynthesisUtterance(randomWord);
+        // Functie om het woord "Links" of "Rechts" te zeggen
+        function playWord(word) {
+            let utterance = new SpeechSynthesisUtterance(word);
             utterance.lang = "nl-NL";
             speechSynthesis.speak(utterance);
+            document.getElementById("output").innerText = word;
         }
 
         function startTraining() {
@@ -48,9 +48,13 @@
             setTimeout(playBeep, 1000);
             setTimeout(() => {
                 playBeep();
-                setTimeout(playWord, 500); // Wacht 0.5s na laatste piep voordat "Links" of "Rechts" komt
+                setTimeout(() => {
+                    let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
+                    playWord(randomWord);
+                }, 500); // 0.5s na de laatste piep voordat het woord komt
             }, 2000);
         }
     </script>
 </body>
 </html>
+
