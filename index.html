@@ -41,6 +41,9 @@
             transform: scale(1.3);
             color: #00a8ff;
         }
+        .love {
+            color: #f9ca24;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +54,7 @@
 
     <script>
         let interval;
+        let count = 0; // Teller voor aantal herhalingen
         const woorden = ["Links", "Rechts"];
 
         // Beep-geluiden genereren (werkt op iPhones!)
@@ -64,7 +68,7 @@
             setTimeout(() => oscillator.stop(), 200);
         }
 
-        // Spraakfunctie voor "Links" of "Rechts"
+        // Spraakfunctie voor "Links", "Rechts" en "Ik hou van je"
         function playWord(word) {
             let utterance = new SpeechSynthesisUtterance(word);
             utterance.lang = "nl-NL";
@@ -72,7 +76,13 @@
 
             let output = document.getElementById("output");
             output.innerText = word;
-            output.classList.add("highlight"); 
+            output.classList.add("highlight");
+
+            if (word === "Ik hou van je") {
+                output.classList.add("love"); // Maak de tekst goudkleurig
+            } else {
+                output.classList.remove("love");
+            }
 
             setTimeout(() => output.classList.remove("highlight"), 500);
         }
@@ -98,8 +108,13 @@
                 playBeep();
                 let pauseTime = Math.random() * 1000 + 500; 
                 setTimeout(() => {
-                    let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
-                    playWord(randomWord);
+                    count++; // Tel hoe vaak de oefening is uitgevoerd
+                    if (count % 10 === 0) {
+                        playWord("Ik hou van je");
+                    } else {
+                        let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
+                        playWord(randomWord);
+                    }
                 }, pauseTime);
             }, 2000);
         }
