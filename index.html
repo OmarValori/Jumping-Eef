@@ -61,7 +61,7 @@
         function playBeep() {
             let context = new (window.AudioContext || window.webkitAudioContext)();
             let oscillator = context.createOscillator();
-            oscillator.type = "sine"; 
+            oscillator.type = "sine";
             oscillator.frequency.setValueAtTime(1000, context.currentTime);
             oscillator.connect(context.destination);
             oscillator.start();
@@ -79,7 +79,7 @@
             output.classList.add("highlight");
 
             if (word === "Ik hou van je") {
-                output.classList.add("love"); // Maak de tekst goudkleurig
+                output.classList.add("love");
             } else {
                 output.classList.remove("love");
             }
@@ -90,33 +90,37 @@
         function startTraining() {
             if (!interval) {
                 executeSequence();
-                interval = setInterval(executeSequence, Math.random() * 3000 + 2000);
             }
         }
 
         function stopTraining() {
-            clearInterval(interval);
+            clearTimeout(interval);
             interval = null;
             document.getElementById("output").innerText = "Gestopt";
         }
 
         function executeSequence() {
             document.getElementById("output").innerText = "Aftellen...";
-            setTimeout(playBeep, 0);
-            setTimeout(playBeep, 1000);
+            
+            // Speel de drie piepjes correct af
+            setTimeout(() => playBeep(), 0);
+            setTimeout(() => playBeep(), 1000);
+            setTimeout(() => playBeep(), 2000);
+
+            // Wacht random 0.5 - 1.5 sec na laatste piep en zeg "Links", "Rechts" of "Ik hou van je"
+            let pauseTime = Math.random() * 1000 + 500;
             setTimeout(() => {
-                playBeep();
-                let pauseTime = Math.random() * 1000 + 500; 
-                setTimeout(() => {
-                    count++; // Tel hoe vaak de oefening is uitgevoerd
-                    if (count % 10 === 0) {
-                        playWord("Ik hou van je");
-                    } else {
-                        let randomWord = woorden[Math.floor(Math.random() * woorden.length)];
-                        playWord(randomWord);
-                    }
-                }, pauseTime);
-            }, 2000);
+                count++;
+                if (count % 10 === 0) {
+                    playWord("Ik hou van je");
+                } else {
+                    let randomWord = woorden[Math.floor(Math.random() * 2)]; // Zorgt voor een eerlijke 50/50 verdeling
+                    playWord(randomWord);
+                }
+
+                // Start de volgende cyclus met een pauze van 2-5 seconden
+                interval = setTimeout(executeSequence, Math.random() * 500 + 500);
+            }, 2500 + pauseTime); // Wachten tot piepjes klaar zijn + extra random pauze
         }
     </script>
 </body>
